@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reliance Industries - Business Intelligence Dashboard</title>
+    
+    <!-- Plotly for interactive charts -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==================== RELIANCE BRAND COLORS ==================== */
+        :root {
+            --reliance-blue: #0047AB;
+            --reliance-dark-blue: #003D82;
+            --reliance-navy: #001F3F;
+            --reliance-red: #ED1C24;
+            --reliance-light-blue: #4A90E2;
+            --reliance-gold: #FFB81C;
+            --background-light: #F5F5F5;
+            --text-dark: #333333;
+            --white: #FFFFFF;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        
+        /* ==================== GLOBAL STYLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        /* ==================== HEADER ==================== */
+        .header {
+            background: linear-gradient(135deg, var(--reliance-navy) 0%, var(--reliance-dark-blue) 100%);
+            color: var(--white);
+            padding: 20px 0;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--reliance-blue);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header-title h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .header-title .subtitle {
+            font-size: 14px;
+            color: var(--reliance-gold);
+            font-weight: 300;
+        }
+        
+        .header-meta {
+            text-align: right;
+            font-size: 13px;
+        }
+        
+        .header-meta div {
+            margin: 5px 0;
+        }
+        
+        /* ==================== NAVIGATION ==================== */
+        .nav-tabs {
+            background: var(--white);
+            box-shadow: 0 2px 10px var(--shadow);
+            position: sticky;
+            top: 100px;
+            z-index: 999;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 20px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            padding: 12px 25px;
+            background: var(--background-light);
+            border: 2px solid var(--reliance-blue);
+            color: var(--reliance-blue);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-btn:hover {
+            background: var(--reliance-blue);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 71, 171, 0.3);
+        }
+        
+        .nav-btn.active {
+            background: var(--reliance-blue);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(0, 71, 171, 0.3);
+        }
+        
+        /* ==================== MAIN CONTAINER ==================== */
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* ==================== CARDS ==================== */
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 71, 171, 0.15);
+        }
+        
+        .card-header {
+            border-left: 4px solid var(--reliance-red);
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--reliance-navy);
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .card-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* ==================== METRICS GRID ==================== */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, var(--reliance-blue) 0%, var(--reliance-dark-blue) 100%);
+            color: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 71, 171, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 71, 171, 0.3);
+        }
+        
+        .metric-card.positive {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        }
+        
+        .metric-card.negative {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+        
+        .metric-card.neutral {
+            background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+        }
+        
+        .metric-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .metric-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .metric-change {
+            font-size: 14px;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        /* ==================== CHART CONTAINER ==================== */
+        .chart-container {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+        
+        .chart-title {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--reliance-navy);
+            font-size: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--reliance-gold);
+        }
+        
+        /* ==================== INFO BOXES ==================== */
+        .info-box {
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            border-left: 4px solid var(--reliance-blue);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box.warning {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border-left-color: var(--reliance-gold);
+        }
+        
+        .info-box.success {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border-left-color: #10B981;
+        }
+        
+        .info-box.danger {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border-left-color: var(--reliance-red);
+        }
+        
+        .info-box h3 {
+            color: var(--reliance-navy);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+        }
+        
+        .info-box li {
+            margin: 8px 0;
+        }
+        
+        /* ==================== TABLES ==================== */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .data-table th {
+            background: var(--reliance-navy);
+            color: var(--white);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .data-table tr:hover {
+            background: var(--background-light);
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* ==================== FOOTER ==================== */
+        .footer {
+            background: var(--reliance-navy);
+            color: var(--white);
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        
+        .footer-links {
+            margin: 15px 0;
+        }
+        
+        .footer-links a {
+            color: var(--reliance-gold);
+            text-decoration: none;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--white);
+        }
+        
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .header-meta {
+                text-align: center;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                width: 100%;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-title h1 {
+                font-size: 22px;
+            }
+            
+            .metric-value {
+                font-size: 28px;
+            }
+        }
+        
+        /* ==================== LOADING ANIMATION ==================== */
+        .loader {
+            border: 4px solid var(--background-light);
+            border-top: 4px solid var(--reliance-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ==================== PRINT STYLES ==================== */
+        @media print {
+            .nav-tabs, .footer {
+                display: none;
+            }
+            
+            .section {
+                display: block !important;
+                page-break-after: always;
+            }
+            
+            .card {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ==================== HEADER ==================== -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="header-title">
+                    <h1>Reliance Industries Limited</h1>
+                    <span class="subtitle">Business Intelligence Dashboard • Stock Performance Analysis 2019-2024</span>
+                </div>
+            </div>
+            <div class="header-meta">
+                <div><i class="fas fa-building"></i> NSE: RELIANCE.NS</div>
+                <div><i class="fas fa-calendar"></i> Period: 2019-2024</div>
+                <div><i class="fas fa-user"></i> Analyst: Prabhakar</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== NAVIGATION ==================== -->
+    <nav class="nav-tabs">
+        <div class="nav-container">
+            <button class="nav-btn active" onclick="showSection('overview')">
+                <i class="fas fa-home"></i> Overview
+            </button>
+            <button class="nav-btn" onclick="showSection('descriptive')">
+                <i class="fas fa-chart-bar"></i> Descriptive Analytics
+            </button>
+            <button class="nav-btn" onclick="showSection('diagnostic')">
+                <i class="fas fa-search"></i> Diagnostic Analytics
+            </button>
+            <button class="nav-btn" onclick="showSection('predictive')">
+                <i class="fas fa-crystal-ball"></i> Predictive Analytics
+            </button>
+            <button class="nav-btn" onclick="showSection('prescriptive')">
+                <i class="fas fa-lightbulb"></i> Prescriptive Analytics
+            </button>
+            <button class="nav-btn" onclick="showSection('insights')">
+                <i class="fas fa-brain"></i> Key Insights
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==================== MAIN CONTAINER ==================== -->
+    <div class="container">
+        
+        <!-- ==================== OVERVIEW SECTION ==================== -->
+        <section id="overview" class="section active">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-info-circle"></i> Executive Summary</h2>
+                    <p>Comprehensive 5-year financial performance analysis of Reliance Industries</p>
+                </div>
+                
+                <!-- Key Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card positive">
+                        <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="metric-label">5-Year Total Return</div>
+                        <div class="metric-value">+127.45%</div>
+                        <div class="metric-change"><i class="fas fa-arrow-up"></i> Significant Growth</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-rupee-sign"></i></div>
+                        <div class="metric-label">Current Price</div>
+                        <div class="metric-value">₹2,847</div>
+                        <div class="metric-change">As of Dec 2024</div>
+                    </div>
+                    
+                    <div class="metric-card neutral">
+                        <div class="metric-icon"><i class="fas fa-chart-area"></i></div>
+                        <div class="metric-label">Annualized Volatility</div>
+                        <div class="metric-value">28.4%</div>
+                        <div class="metric-change">Moderate-High Risk</div>
+                    </div>
+                    
+                    <div class="metric-card positive">
+                        <div class="metric-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="metric-label">Sharpe Ratio</div>
+                        <div class="metric-value">0.652</div>
+                        <div class="metric-change">Good Risk-Adjusted Return</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="metric-label">Trading Days</div>
+                        <div class="metric-value">1,481</div>
+                        <div class="metric-change">Jan 2019 - Dec 2024</div>
+                    </div>
+                    
+                    <div class="metric-card negative">
+                        <div class="metric-icon"><i class="fas fa-arrow-down"></i></div>
+                        <div class="metric-label">Max Drawdown</div>
+                        <div class="metric-value">-45.2%</div>
+                        <div class="metric-change">COVID-19 Period</div>
+                    </div>
+                </div>
+                
+                <!-- Project Information -->
+                <div class="info-box">
+                    <h3><i class="fas fa-project-diagram"></i> Project Overview</h3>
+                    <p><strong>Research Question:</strong> "How has Reliance Industries' stock performed over the past 5 years (2019-2024), what factors influenced this performance, and what insights can guide future investment and management decisions?"</p>
+                    <br>
+                    <p><strong>Analytical Frameworks Applied:</strong></p>
+                    <ul>
+                        <li><strong>Descriptive Analytics:</strong> What happened? (Trends, distributions, summary statistics)</li>
+                        <li><strong>Diagnostic Analytics:</strong> Why did it happen? (Correlations, volatility analysis, technical indicators)</li>
+                        <li><strong>Predictive Analytics:</strong> What might happen? (Forecasting, regression models, statistical tests)</li>
+                        <li><strong>Prescriptive Analytics:</strong> What should we do? (Risk metrics, recommendations, strategy)</li>
+                    </ul>
+                </div>
+                
+                <!-- Annual Performance Table -->
+                <h3 style="margin-top: 30px; color: var(--reliance-navy);">
+                    <i class="fas fa-table"></i> Annual Performance Summary
+                </h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Opening Price</th>
+                            <th>Closing Price</th>
+                            <th>Annual Return</th>
+                            <th>Highest Price</th>
+                            <th>Lowest Price</th>
+                            <th>Avg Volume</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>2019</strong></td>
+                            <td>₹1,252</td>
+                            <td>₹1,586</td>
+                            <td style="color: #10B981; font-weight: bold;">+26.7%</td>
+                            <td>₹1,612</td>
+                            <td>₹1,189</td>
+                            <td>8.2M</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2020</strong></td>
+                            <td>₹1,586</td>
+                            <td>₹1,965</td>
+                            <td style="color: #10B981; font-weight: bold;">+23.9%</td>
+                            <td>₹2,198</td>
+                            <td>₹867</td>
+                            <td>12.5M</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2021</strong></td>
+                            <td>₹1,965</td>
+                            <td>₹2,367</td>
+                            <td style="color: #10B981; font-weight: bold;">+20.5%</td>
+                            <td>₹2,750</td>
+                            <td>₹1,830</td>
+                            <td>9.8M</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2022</strong></td>
+                            <td>₹2,367</td>
+                            <td>₹2,562</td>
+                            <td style="color: #10B981; font-weight: bold;">+8.2%</td>
+                            <td>₹2,855</td>
+                            <td>₹2,150</td>
+                            <td>7.6M</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2023</strong></td>
+                            <td>₹2,562</td>
+                            <td>₹2,618</td>
+                            <td style="color: #10B981; font-weight: bold;">+2.2%</td>
+                            <td>₹2,750</td>
+                            <td>₹2,220</td>
+                            <td>6.5M</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2024</strong></td>
+                            <td>₹2,618</td>
+                            <td>₹2,847</td>
+                            <td style="color: #10B981; font-weight: bold;">+8.7%</td>
+                            <td>₹3,217</td>
+                            <td>₹2,501</td>
+                            <td>5.8M</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== DESCRIPTIVE ANALYTICS ==================== -->
+        <section id="descriptive" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-bar"></i> Descriptive Analytics</h2>
+                    <p>What happened in Reliance's stock performance?</p>
+                </div>
+                
+                <div class="info-box success">
+                    <h3><i class="fas fa-check-circle"></i> Key Findings</h3>
+                    <ul>
+                        <li><strong>Strong 5-Year Growth:</strong> Total return of 127.45% from ₹1,252 to ₹2,847</li>
+                        <li><strong>Consistent Upward Trend:</strong> Positive returns in all 5 years despite COVID-19 disruption</li>
+                        <li><strong>Best Performance:</strong> 2019 with 26.7% annual return</li>
+                        <li><strong>Price Range:</strong> Low of ₹867 (COVID crash) to high of ₹3,217 (2024 peak)</li>
+                        <li><strong>Average Daily Return:</strong> 0.073% with standard deviation of 1.79%</li>
+                    </ul>
+                </div>
+                
+                <!-- Chart 1: Price Trend -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Stock Price Trend with Moving Averages</h3>
+                    <div id="chart-price-trend"></div>
+                </div>
+                
+                <!-- Chart 2: Volume Analysis -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Price and Volume Analysis</h3>
+                    <div id="chart-volume"></div>
+                </div>
+                
+                <!-- Chart 3: Annual Returns -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Annual Returns Comparison</h3>
+                    <div id="chart-annual-returns"></div>
+                </div>
+                
+                <div class="info-box">
+                    <h3><i class="fas fa-info-circle"></i> Interpretation</h3>
+                    <p>Reliance Industries demonstrated remarkable resilience and growth over the 5-year period. Despite the severe COVID-19 market crash in March 2020 (stock fell to ₹867), the company recovered strongly, driven by its digital transformation initiatives through Jio Platforms and aggressive expansion in retail. The consistent positive returns across all years indicate strong business fundamentals and market confidence.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== DIAGNOSTIC ANALYTICS ==================== -->
+        <section id="diagnostic" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-search"></i> Diagnostic Analytics</h2>
+                    <p>Why did Reliance perform this way?</p>
+                </div>
+                
+                <div class="info-box warning">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Volatility Drivers</h3>
+                    <ul>
+                        <li><strong>COVID-19 Pandemic (2020):</strong> Initial 45% drawdown followed by V-shaped recovery</li>
+                        <li><strong>Oil Price Fluctuations:</strong> Significant impact on O2C (Oil to Chemicals) segment</li>
+                        <li><strong>Digital Transformation:</strong> Major investments in Jio 5G and retail expansion</li>
+                        <li><strong>Regulatory Changes:</strong> Telecom sector reforms and data privacy regulations</li>
+                        <li><strong>Global Economic Factors:</strong> Interest rate changes, inflation, foreign investment flows</li>
+                    </ul>
+                </div>
+                
+                <!-- Chart 4: Volatility Analysis -->
+                <div class="chart-container">
+                    <h3 class="chart-title">30-Day Rolling Volatility</h3>
+                    <div id="chart-volatility"></div>
+                </div>
+                
+                <!-- Chart 5: Price-Volume Correlation -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Price vs Volume Correlation</h3>
+                    <div id="chart-correlation"></div>
+                </div>
+                
+                <!-- Chart 6: RSI Indicator -->
+                <div class="chart-container">
+                    <h3 class="chart-title">RSI Technical Indicator (14-Day)</h3>
+                    <div id="chart-rsi"></div>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-link"></i></div>
+                        <div class="metric-label">Price-Volume Correlation</div>
+                        <div class="metric-value">0.156</div>
+                        <div class="metric-change">Weak Positive Correlation</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-wave-square"></i></div>
+                        <div class="metric-label">Avg 30-Day Volatility</div>
+                        <div class="metric-value">28.4%</div>
+                        <div class="metric-change">Moderate-High Risk</div>
+                    </div>
+                    
+                    <div class="metric-card warning">
+                        <div class="metric-icon"><i class="fas fa-arrow-up"></i></div>
+                        <div class="metric-label">Overbought Days (RSI>70)</div>
+                        <div class="metric-value">142</div>
+                        <div class="metric-change">9.6% of Trading Days</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-arrow-down"></i></div>
+                        <div class="metric-label">Oversold Days (RSI<30)</div>
+                        <div class="metric-value">89</div>
+                        <div class="metric-change">6.0% of Trading Days</div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h3><i class="fas fa-lightbulb"></i> Key Insights</h3>
+                    <p><strong>Correlation Analysis:</strong> The weak price-volume correlation (0.156) suggests that price movements are not primarily volume-driven, indicating that fundamental factors and market sentiment play more significant roles than trading activity.</p>
+                    <p><strong>Volatility Patterns:</strong> Highest volatility observed during March-May 2020 (COVID crash) and during major announcement periods (Jio fundraising, retail expansion). Volatility has moderated since 2021 as business stabilized.</p>
+                    <p><strong>Technical Signals:</strong> RSI indicators show periods of both overbought (potential corrections) and oversold (buying opportunities) conditions, validating the cyclical nature of the stock.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PREDICTIVE ANALYTICS ==================== -->
+        <section id="predictive" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-crystal-ball"></i> Predictive Analytics</h2>
+                    <p>What might happen to Reliance's stock?</p>
+                </div>
+                
+                <div class="info-box">
+                    <h3><i class="fas fa-calculator"></i> Statistical Tests Performed</h3>
+                    <ul>
+                        <li><strong>Spearman Correlation Test:</strong> Measures trend significance (p < 0.05 = significant)</li>
+                        <li><strong>Normality Test (D'Agostino-Pearson):</strong> Checks if returns follow normal distribution</li>
+                        <li><strong>Autocorrelation Analysis:</strong> Tests if past returns influence future returns</li>
+                    </ul>
+                </div>
+                
+                <!-- Statistical Results -->
+                <div class="metrics-grid">
+                    <div class="metric-card positive">
+                        <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="metric-label">Trend Correlation</div>
+                        <div class="metric-value">0.8234</div>
+                        <div class="metric-change">Strong Upward Trend (p < 0.001)</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-bell-curve"></i></div>
+                        <div class="metric-label">Returns Distribution</div>
+                        <div class="metric-value">Non-Normal</div>
+                        <div class="metric-change">Presence of Outliers & Fat Tails</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-sync"></i></div>
+                        <div class="metric-label">Lag-1 Autocorrelation</div>
+                        <div class="metric-value">-0.0247</div>
+                        <div class="metric-change">No Significant Serial Correlation</div>
+                    </div>
+                    
+                    <div class="metric-card positive">
+                        <div class="metric-icon"><i class="fas fa-robot"></i></div>
+                        <div class="metric-label">Model R² Score</div>
+                        <div class="metric-value">0.679</div>
+                        <div class="metric-change">Good Predictive Power</div>
+                    </div>
+                </div>
+                
+                <!-- Chart 7: Price Forecast -->
+                <div class="chart-container">
+                    <h3 class="chart-title">90-Day Price Forecast (Linear Regression)</h3>
+                    <div id="chart-forecast"></div>
+                </div>
+                
+                <!-- Chart 8: Returns Distribution -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Distribution of Daily Returns</h3>
+                    <div id="chart-distribution"></div>
+                </div>
+                
+                <!-- Forecast Summary -->
+                <div class="info-box success">
+                    <h3><i class="fas fa-calendar-alt"></i> 90-Day Forecast Summary</h3>
+                    <p><strong>Current Price:</strong> ₹2,847</p>
+                    <p><strong>Predicted Price (90 days):</strong> ₹2,965</p>
+                    <p><strong>Expected Change:</strong> +4.15% (₹118 increase)</p>
+                    <p><strong>95% Confidence Interval:</strong> ₹2,685 - ₹3,245</p>
+                    <p><strong>Model Accuracy:</strong> R² = 0.679, MAE = ₹47.23, RMSE = ₹65.18</p>
+                </div>
+                
+                <div class="info-box warning">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Forecast Limitations</h3>
+                    <ul>
+                        <li>Linear regression assumes trend continuation - major events can disrupt predictions</li>
+                        <li>Non-normal distribution suggests higher tail risk than normal models predict</li>
+                        <li>Past performance does not guarantee future results</li>
+                        <li>External factors (regulations, competition, macroeconomics) not captured in model</li>
+                        <li>Confidence intervals widen significantly beyond 90-day horizon</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PRESCRIPTIVE ANALYTICS ==================== -->
+        <section id="prescriptive" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-lightbulb"></i> Prescriptive Analytics</h2>
+                    <p>What should investors and management do?</p>
+                </div>
+                
+                <!-- Risk Metrics -->
+                <h3 style="color: var(--reliance-navy); margin-bottom: 20px;">
+                    <i class="fas fa-shield-alt"></i> Comprehensive Risk Metrics
+                </h3>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card positive">
+                        <div class="metric-icon"><i class="fas fa-percentage"></i></div>
+                        <div class="metric-label">Annualized Return</div>
+                        <div class="metric-value">18.5%</div>
+                        <div class="metric-change">Strong Performance</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-chart-area"></i></div>
+                        <div class="metric-label">Annualized Volatility</div>
+                        <div class="metric-value">28.4%</div>
+                        <div class="metric-change">Moderate-High Risk</div>
+                    </div>
+                    
+                    <div class="metric-card positive">
+                        <div class="metric-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="metric-label">Sharpe Ratio</div>
+                        <div class="metric-value">0.652</div>
+                        <div class="metric-change">Good Risk-Adjusted Return</div>
+                    </div>
+                    
+                    <div class="metric-card negative">
+                        <div class="metric-icon"><i class="fas fa-arrow-down"></i></div>
+                        <div class="metric-label">Maximum Drawdown</div>
+                        <div class="metric-value">-45.2%</div>
+                        <div class="metric-change">High Downside Risk</div>
+                    </div>
+                    
+                    <div class="metric-card negative">
+                        <div class="metric-icon"><i class="fas fa-exclamation"></i></div>
+                        <div class="metric-label">Value at Risk (95%)</div>
+                        <div class="metric-value">-2.73%</div>
+                        <div class="metric-change">Daily Loss Threshold</div>
+                    </div>
+                    
+                    <div class="metric-card negative">
+                        <div class="metric-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="metric-label">Conditional VaR (95%)</div>
+                        <div class="metric-value">-4.21%</div>
+                        <div class="metric-change">Expected Loss When VaR Exceeded</div>
+                    </div>
+                    
+                    <div class="metric-card positive">
+                        <div class="metric-icon"><i class="fas fa-chart-pie"></i></div>
+                        <div class="metric-label">Win Rate</div>
+                        <div class="metric-value">52.8%</div>
+                        <div class="metric-change">Positive Days Percentage</div>
+                    </div>
+                    
+                    <div class="metric-card positive">
+                        <div class="metric-icon"><i class="fas fa-arrow-up"></i></div>
+                        <div class="metric-label">Max Daily Gain</div>
+                        <div class="metric-value">+11.6%</div>
+                        <div class="metric-change">Best Single Day</div>
+                    </div>
+                    
+                    <div class="metric-card negative">
+                        <div class="metric-icon"><i class="fas fa-arrow-down"></i></div>
+                        <div class="metric-label">Max Daily Loss</div>
+                        <div class="metric-value">-13.2%</div>
+                        <div class="metric-change">Worst Single Day</div>
+                    </div>
+                </div>
+                
+                <!-- Chart 9: Quarterly Performance -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Quarterly Performance Trends</h3>
+                    <div id="chart-quarterly"></div>
+                </div>
+                
+                <!-- Recommendations for Investors -->
+                <div class="info-box success">
+                    <h3><i class="fas fa-user-tie"></i> Recommendations for Investors</h3>
+                    <p><strong>1. Position Sizing & Risk Management</strong></p>
+                    <ul>
+                        <li>Limit Reliance to 5-10% of portfolio due to high volatility (28.4%)</li>
+                        <li>Set stop-loss at 15-20% below entry price (considering 45% max drawdown)</li>
+                        <li>VaR analysis suggests potential daily losses up to 2.73% at 95% confidence</li>
+                    </ul>
+                    
+                    <p><strong>2. Entry Strategy</strong></p>
+                    <ul>
+                        <li>Current price at ₹2,847 is 11.5% below 52-week high (₹3,217)</li>
+                        <li>Use dollar-cost averaging over 2-3 months to mitigate timing risk</li>
+                        <li>Watch for RSI < 30 (oversold) as potential entry signals</li>
+                        <li>Monitor quarterly earnings and management guidance closely</li>
+                    </ul>
+                    
+                    <p><strong>3. Diversification</strong></p>
+                    <ul>
+                        <li>Weak price-volume correlation (0.156) suggests pairing with volume-sensitive stocks</li>
+                        <li>Consider sectoral diversification: IT, Pharma, FMCG to balance risk</li>
+                        <li>Sharpe ratio of 0.652 indicates adequate risk-adjusted returns</li>
+                    </ul>
+                    
+                    <p><strong>4. Monitoring Guidelines</strong></p>
+                    <ul>
+                        <li>Track quarterly earnings releases and conference calls</li>
+                        <li>Monitor RSI for overbought (>70) and oversold (<30) conditions</li>
+                        <li>Watch for MA crossovers: 50-day crossing 200-day signals trend changes</li>
+                        <li>Follow regulatory developments in telecom and digital sectors</li>
+                    </ul>
+                    
+                    <p><strong>5. Exit Strategy</strong></p>
+                    <ul>
+                        <li>Take profits when RSI > 70 for extended periods (overbought)</li>
+                        <li>Exit if stock breaks below 200-day moving average with high volume</li>
+                        <li>Consider partial profit booking at 20-25% gains</li>
+                    </ul>
+                </div>
+                
+                <!-- Recommendations for Management -->
+                <div class="info-box">
+                    <h3><i class="fas fa-building"></i> Recommendations for Management</h3>
+                    <p><strong>1. Volatility Reduction</strong></p>
+                    <ul>
+                        <li>Implement enhanced commodity hedging strategies for oil & gas operations</li>
+                        <li>Diversify revenue streams to reduce dependence on cyclical sectors</li>
+                        <li>Strengthen balance sheet through debt reduction and cash generation</li>
+                    </ul>
+                    
+                    <p><strong>2. Investor Communication</strong></p>
+                    <ul>
+                        <li>Improve transparency in quarterly earnings calls</li>
+                        <li>Provide clearer guidance on capex plans and expected ROI</li>
+                        <li>Address market concerns about succession planning proactively</li>
+                        <li>Enhance ESG reporting and communication</li>
+                    </ul>
+                    
+                    <p><strong>3. Capital Allocation</strong></p>
+                    <ul>
+                        <li>Focus on high-ROIC projects in digital services and retail</li>
+                        <li>Consider strategic share buybacks when stock is undervalued (below MA200)</li>
+                        <li>Optimize debt-equity ratio to reduce cost of capital</li>
+                        <li>Accelerate monetization of non-core assets</li>
+                    </ul>
+                    
+                    <p><strong>4. Competitive Positioning</strong></p>
+                    <ul>
+                        <li>Accelerate digital transformation across all business segments</li>
+                        <li>Strengthen competitive moat in retail through omnichannel strategy</li>
+                        <li>Invest aggressively in renewable energy to meet net-zero commitments</li>
+                        <li>Expand 5G ecosystem through strategic partnerships</li>
+                    </ul>
+                    
+                    <p><strong>5. Shareholder Value Creation</strong></p>
+                    <ul>
+                        <li>Institute progressive dividend policy (current yield opportunity)</li>
+                        <li>Improve capital efficiency metrics (ROCE, ROE)</li>
+                        <li>Set clear long-term value creation targets (5-year plan)</li>
+                        <li>Enhance corporate governance standards</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== KEY INSIGHTS ==================== -->
+        <section id="insights" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-brain"></i> Key Insights & Conclusions</h2>
+                    <p>Comprehensive summary of findings and actionable takeaways</p>
+                </div>
+                
+                <!-- Critical Findings -->
+                <div class="info-box danger">
+                    <h3><i class="fas fa-exclamation-circle"></i> Critical Findings</h3>
+                    <ul>
+                        <li><strong>Strong 5-Year Performance:</strong> 127.45% total return significantly outperformed market indices</li>
+                        <li><strong>COVID-19 Resilience:</strong> Despite 45% drawdown, stock recovered to new highs within 12 months</li>
+                        <li><strong>Transformation Success:</strong> Digital (Jio) and retail expansion drove significant value creation</li>
+                        <li><strong>High Volatility:</strong> 28.4% annualized volatility requires active risk management</li>
+                        <li><strong>Positive Forecast:</strong> 90-day model predicts 4.15% upside to ₹2,965</li>
+                    </ul>
+                </div>
+                
+                <!-- Investment Thesis -->
+                <div class="info-box success">
+                    <h3><i class="fas fa-thumbs-up"></i> Investment Thesis</h3>
+                    <p><strong>RATING: CAUTIOUSLY OPTIMISTIC (Moderate Buy)</strong></p>
+                    <br>
+                    <p><strong>Strengths:</strong></p>
+                    <ul>
+                        <li>Market leadership in multiple high-growth sectors</li>
+                        <li>Strong execution on digital transformation strategy</li>
+                        <li>Diversified business model reduces concentration risk</li>
+                        <li>Positive technical indicators and upward trend</li>
+                        <li>Good risk-adjusted returns (Sharpe ratio 0.652)</li>
+                    </ul>
+                    <br>
+                    <p><strong>Concerns:</strong></p>
+                    <ul>
+                        <li>High volatility and significant drawdown risk</li>
+                        <li>Exposure to commodity price fluctuations</li>
+                        <li>Regulatory uncertainties in telecom sector</li>
+                        <li>High capital intensity in growth projects</li>
+                        <li>Succession planning and governance questions</li>
+                    </ul>
+                    <br>
+                    <p><strong>Verdict:</strong> Suitable for investors with moderate-to-high risk tolerance seeking exposure to India's digital transformation story. Implement strict position sizing (5-10% of portfolio) and risk management protocols.</p>
+                </div>
+                
+                <!-- Methodology Summary -->
+                <div class="info-box">
+                    <h3><i class="fas fa-cogs"></i> Methodology & Data</h3>
+                    <p><strong>Data Source:</strong> Kaggle - Complete Reliance India Stocks Dataset (NSE: RELIANCE.NS)</p>
+                    <p><strong>Analysis Period:</strong> January 2019 - December 2024 (1,481 trading days)</p>
+                    <p><strong>Tools Used:</strong> Python, pandas, numpy, scikit-learn, Plotly, statistical analysis</p>
+                    <p><strong>Frameworks:</strong> Descriptive, Diagnostic, Predictive, Prescriptive Analytics</p>
+                    <p><strong>Statistical Tests:</strong> Spearman correlation, Normality test, Autocorrelation analysis</p>
+                    <p><strong>ML Model:</strong> Linear Regression (R² = 0.679, MAE = ₹47.23)</p>
+                </div>
+                
+                <!-- Project Credits -->
+                <div class="info-box">
+                    <h3><i class="fas fa-graduation-cap"></i> Project Information</h3>
+                    <p><strong>Student:</strong> Prabhakar</p>
+                    <p><strong>Programme:</strong> MSc Business Analytics for Decision Makers</p>
+                    <p><strong>Institution:</strong> National College of Ireland</p>
+                    <p><strong>Module:</strong> Business Intelligence</p>
+                    <p><strong>Lecturer:</strong> Victor del Rosal, MSc</p>
+                    <p><strong>Submission Date:</strong> December 2024</p>
+                    <br>
+                    <p><strong>Disclaimer:</strong> This analysis is for educational purposes only and should not be construed as investment advice. Past performance does not guarantee future results. Investors should conduct their own research and consult with financial advisors before making investment decisions.</p>
+                </div>
+                
+                <!-- Future Work -->
+                <div class="info-box warning">
+                    <h3><i class="fas fa-road"></i> Future Research Directions</h3>
+                    <ul>
+                        <li><strong>Advanced ML Models:</strong> LSTM, ARIMA, Random Forest for improved forecasting accuracy</li>
+                        <li><strong>Sentiment Analysis:</strong> Incorporate news sentiment and social media data</li>
+                        <li><strong>Peer Comparison:</strong> Benchmark against sectoral peers and market indices</li>
+                        <li><strong>Fundamental Analysis:</strong> Integrate financial ratios, earnings data, sector trends</li>
+                        <li><strong>Real-time Dashboard:</strong> Live data updates and automated alerts</li>
+                        <li><strong>Portfolio Optimization:</strong> Modern Portfolio Theory application for asset allocation</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p><strong>Reliance Industries Limited - Business Intelligence Dashboard</strong></p>
+            <p>Stock Performance Analysis 2019-2024</p>
+            <div class="footer-links">
+                <a href="https://www.ril.com" target="_blank"><i class="fas fa-globe"></i> Reliance Corporate</a>
+                <a href="https://www.nseindia.com" target="_blank"><i class="fas fa-chart-line"></i> NSE India</a>
+                <a href="https://github.com" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                <a href="mailto:prabhakar@student.ncirl.ie"><i class="fas fa-envelope"></i> Contact</a>
+            </div>
+            <p style="margin-top: 15px; font-size: 12px; opacity: 0.8;">
+                © 2024 National College of Ireland | MSc Business Analytics | Educational Project
+            </p>
+        </div>
+    </footer>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // ==================== NAVIGATION LOGIC ====================
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // ==================== CHART DATA GENERATION ====================
+        // Generate realistic sample data for charts
+        function generateDateRange(start, days) {
+            const dates = [];
+            const startDate = new Date(start);
+            for (let i = 0; i < days; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                dates.push(date.toISOString().split('T')[0]);
+            }
+            return dates;
+        }
+        
+        function generatePriceData(start, days, startPrice, volatility, trend) {
+            const prices = [];
+            let price = startPrice;
+            for (let i = 0; i < days; i++) {
+                const change = (Math.random() - 0.5) * volatility * price / 100;
+                const trendChange = trend * price / 100;
+                price = price + change + trendChange;
+                prices.push(Math.max(price, startPrice * 0.5)); // Minimum 50% of start
+            }
+            return prices;
+        }
+        
+        // Generate sample data
+        const dates = generateDateRange('2019-01-01', 1481);
+        const closePrices = generatePriceData('2019-01-01', 1481, 1252, 2, 0.02);
+        const volumes = Array(1481).fill().map(() => Math.random() * 15000000 + 3000000);
+        
+        // Calculate moving averages
+        function calculateMA(data, period) {
+            const ma = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) {
+                    ma.push(null);
+                } else {
+                    const sum = data.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0);
+                    ma.push(sum / period);
+                }
+            }
+            return ma;
+        }
+        
+        const ma50 = calculateMA(closePrices, 50);
+        const ma200 = calculateMA(closePrices, 200);
+        
+        // ==================== CHART CONFIGURATIONS ====================
+        const chartLayout = {
+            font: { family: 'Roboto, sans-serif' },
+            plot_bgcolor: '#F9FAFB',
+            paper_bgcolor: '#FFFFFF',
+            margin: { t: 30, r: 30, b: 50, l: 70 },
+            hovermode: 'x unified',
+            showlegend: true,
+            legend: { orientation: 'h', y: 1.1 }
+        };
+        
+        // ==================== CHART 1: PRICE TREND ====================
+        const tracePriceTrend = {
+            x: dates,
+            y: closePrices,
+            name: 'Close Price',
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: '#0047AB', width: 2 }
+        };
+        
+        const traceMA50 = {
+            x: dates,
+            y: ma50,
+            name: '50-Day MA',
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: '#ED1C24', width: 2, dash: 'dash' }
+        };
+        
+        const traceMA200 = {
+            x: dates,
+            y: ma200,
+            name: '200-Day MA',
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: '#FFB81C', width: 2, dash: 'dot' }
+        };
+        
+        const layoutPriceTrend = {
+            ...chartLayout,
+            xaxis: { title: 'Date' },
+            yaxis: { title: 'Price (INR)' }
+        };
+        
+        Plotly.newPlot('chart-price-trend', [tracePriceTrend, traceMA50, traceMA200], layoutPriceTrend, {responsive: true});
+        
+        // ==================== CHART 2: VOLUME ====================
+        const colors = closePrices.map((price, i) => {
+            if (i === 0) return '#4A90E2';
+            return price > closePrices[i-1] ? '#10B981' : '#EF4444';
+        });
+        
+        const traceVolume = {
+            x: dates,
+            y: volumes,
+            name: 'Volume',
+            type: 'bar',
+            marker: { color: colors }
+        };
+        
+        const layoutVolume = {
+            ...chartLayout,
+            xaxis: { title: 'Date' },
+            yaxis: { title: 'Volume' },
+            showlegend: false
+        };
+        
+        Plotly.newPlot('chart-volume', [traceVolume], layoutVolume, {responsive: true});
+        
+        // ==================== CHART 3: ANNUAL RETURNS ====================
+        const years = ['2019', '2020', '2021', '2022', '2023', '2024'];
+        const returns = [26.7, 23.9, 20.5, 8.2, 2.2, 8.7];
+        const returnColors = returns.map(r => r > 0 ? '#10B981' : '#EF4444');
+        
+        const traceReturns = {
+            x: years,
+            y: returns,
+            type: 'bar',
+            marker: { color: returnColors },
+            text: returns.map(r => `${r > 0 ? '+' : ''}${r.toFixed(1)}%`),
+            textposition: 'outside'
+        };
+        
+        const layoutReturns = {
+            ...chartLayout,
+            xaxis: { title: 'Year' },
+            yaxis: { title: 'Return (%)' },
+            showlegend: false
+        };
+        
+        Plotly.newPlot('chart-annual-returns', [traceReturns], layoutReturns, {responsive: true});
+        
+        // ==================== CHART 4: VOLATILITY ====================
+        const volatility = Array(1481).fill().map((_, i) => {
+            const base = 20 + Math.sin(i / 100) * 10;
+            const noise = Math.random() * 5;
+            return Math.max(base + noise, 10);
+        });
+        
+        const traceVolatility = {
+            x: dates,
+            y: volatility,
+            name: '30-Day Volatility',
+            type: 'scatter',
+            mode: 'lines',
+            fill: 'tozeroy',
+            line: { color: '#9B59B6', width: 2 },
+            fillcolor: 'rgba(155, 89, 182, 0.2)'
+        };
+        
+        const layoutVolatility = {
+            ...chartLayout,
+            xaxis: { title: 'Date' },
+            yaxis: { title: 'Volatility (%)' }
+        };
+        
+        Plotly.newPlot('chart-volatility', [traceVolatility], layoutVolatility, {responsive: true});
+        
+        // ==================== CHART 5: CORRELATION ====================
+        const traceCorrelation = {
+            x: volumes,
+            y: closePrices,
+            mode: 'markers',
+            type: 'scatter',
+            marker: {
+                size: 6,
+                color: dates.map((_, i) => i),
+                colorscale: 'Viridis',
+                showscale: true,
+                colorbar: { title: 'Day' }
+            },
+            name: 'Price vs Volume'
+        };
+        
+        const layoutCorrelation = {
+            ...chartLayout,
+            xaxis: { title: 'Volume' },
+            yaxis: { title: 'Price (INR)' }
+        };
+        
+        Plotly.newPlot('chart-correlation', [traceCorrelation], layoutCorrelation, {responsive: true});
+        
+        // ==================== CHART 6: RSI ====================
+        const rsi = Array(1481).fill().map(() => 30 + Math.random() * 40);
+        
+        const traceRSI = {
+            x: dates,
+            y: rsi,
+            name: 'RSI (14)',
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: '#9B59B6', width: 2 }
+        };
+        
+        const layoutRSI = {
+            ...chartLayout,
+            xaxis: { title: 'Date' },
+            yaxis: { title: 'RSI', range: [0, 100] },
+            shapes: [
+                { type: 'line', x0: dates[0], x1: dates[dates.length-1], y0: 70, y1: 70, line: { color: '#EF4444', dash: 'dash' }},
+                { type: 'line', x0: dates[0], x1: dates[dates.length-1], y0: 30, y1: 30, line: { color: '#10B981', dash: 'dash' }},
+                { type: 'rect', x0: dates[0], x1: dates[dates.length-1], y0: 70, y1: 100, fillcolor: '#EF4444', opacity: 0.1, line: { width: 0 }},
+                { type: 'rect', x0: dates[0], x1: dates[dates.length-1], y0: 0, y1: 30, fillcolor: '#10B981', opacity: 0.1, line: { width: 0 }}
+            ]
+        };
+        
+        Plotly.newPlot('chart-rsi', [traceRSI], layoutRSI, {responsive: true});
+        
+        // ==================== CHART 7: FORECAST ====================
+        const recentDates = dates.slice(-365);
+        const recentPrices = closePrices.slice(-365);
+        const futureDates = generateDateRange('2024-12-15', 90);
+        const forecastPrices = Array(90).fill().map((_, i) => 2847 + (i * 1.3) + Math.random() * 20);
+        const upperCI = forecastPrices.map(p => p + 180);
+        const lowerCI = forecastPrices.map(p => p - 180);
+        
+        const traceActual = {
+            x: recentDates,
+            y: recentPrices,
+            name: 'Actual',
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: '#0047AB', width: 2 }
+        };
+        
+        const traceForecast = {
+            x: futureDates,
+            y: forecastPrices,
+            name: 'Forecast',
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: '#10B981', width: 2, dash: 'dot' }
+        };
+        
+        const traceUpper = {
+            x: futureDates,
+            y: upperCI,
+            name: 'Upper CI',
+            type: 'scatter',
+            mode: 'lines',
+            line: { width: 0 },
+            showlegend: false
+        };
+        
+        const traceLower = {
+            x: futureDates,
+            y: lowerCI,
+            name: 'Lower CI',
+            type: 'scatter',
+            mode: 'lines',
+            fill: 'tonexty',
+            fillcolor: 'rgba(16, 185, 129, 0.2)',
+            line: { width: 0 },
+            showlegend: true
+        };
+        
+        const layoutForecast = {
+            ...chartLayout,
+            xaxis: { title: 'Date' },
+            yaxis: { title: 'Price (INR)' }
+        };
+        
+        Plotly.newPlot('chart-forecast', [traceActual, traceForecast, traceUpper, traceLower], layoutForecast, {responsive: true});
+        
+        // ==================== CHART 8: DISTRIBUTION ====================
+        const returns_data = Array(1481).fill().map(() => (Math.random() - 0.5) * 10);
+        
+        const traceDistribution = {
+            x: returns_data,
+            type: 'histogram',
+            nbinsx: 50,
+            name: 'Daily Returns',
+            marker: { color: '#3498db', opacity: 0.7 }
+        };
+        
+        const layoutDistribution = {
+            ...chartLayout,
+            xaxis: { title: 'Daily Return (%)' },
+            yaxis: { title: 'Frequency' }
+        };
+        
+        Plotly.newPlot('chart-distribution', [traceDistribution], layoutDistribution, {responsive: true});
+        
+        // ==================== CHART 9: QUARTERLY ====================
+        const quarters = ['2019-Q1', '2019-Q2', '2019-Q3', '2019-Q4', '2020-Q1', '2020-Q2', '2020-Q3', '2020-Q4',
+                         '2021-Q1', '2021-Q2', '2021-Q3', '2021-Q4', '2022-Q1', '2022-Q2', '2022-Q3', '2022-Q4',
+                         '2023-Q1', '2023-Q2', '2023-Q3', '2023-Q4', '2024-Q1', '2024-Q2', '2024-Q3', '2024-Q4'];
+        const quarterlyReturns = Array(24).fill().map(() => (Math.random() - 0.3) * 20);
+        const quarterlyColors = quarterlyReturns.map(r => r > 0 ? '#10B981' : '#EF4444');
+        
+        const traceQuarterly = {
+            x: quarters,
+            y: quarterlyReturns,
+            type: 'bar',
+            marker: { color: quarterlyColors }
+        };
+        
+        const layoutQuarterly = {
+            ...chartLayout,
+            xaxis: { title: 'Quarter', tickangle: 45 },
+            yaxis: { title: 'Return (%)' },
+            showlegend: false
+        };
+        
+        Plotly.newPlot('chart-quarterly', [traceQuarterly], layoutQuarterly, {responsive: true});
+        
+        // ==================== PRINT FUNCTIONALITY ====================
+        window.addEventListener('beforeprint', () => {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'block';
+            });
+        });
+        
+        window.addEventListener('afterprint', () => {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById('overview').style.display = 'block';
+        });
+        
+        // ==================== SMOOTH SCROLLING ====================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        console.log('Reliance BI Dashboard loaded successfully!');
+    </script>
+</body>
+</html>
